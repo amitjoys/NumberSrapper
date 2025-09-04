@@ -224,6 +224,14 @@ async def get_job_status(job_id: str):
 async def get_job_results(job_id: str):
     try:
         results = await db.scraped_data.find({"job_id": job_id}).to_list(1000)
+        
+        # Convert ObjectId and datetime objects for JSON serialization
+        for result in results:
+            if "_id" in result:
+                result["_id"] = str(result["_id"])
+            if "scraped_at" in result and result["scraped_at"]:
+                result["scraped_at"] = result["scraped_at"].isoformat()
+        
         return {"results": results, "count": len(results)}
     except Exception as e:
         logging.error(f"Error getting job results: {e}")
