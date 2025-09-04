@@ -425,10 +425,11 @@ class ScrapingEngine:
             # Send final completion message
             final_message = {
                 "type": "job_complete",
-                "job_id": job_id,
-                "total": total_urls,
-                "completed": completed,
-                "failed": failed
+                "job_id": str(job_id),
+                "total": int(total_urls),
+                "completed": int(completed),
+                "failed": int(failed),
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             await self.connection_manager.broadcast(json.dumps(final_message))
             
