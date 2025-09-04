@@ -193,7 +193,7 @@ const BulkUpload = ({ onUpload, onDownloadTemplate, isLoading }) => {
             <SelectTrigger className="h-12">
               <SelectValue placeholder="Select thread count" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-60 overflow-y-auto">
               {Array.from({ length: 25 }, (_, i) => i + 1).map((num) => (
                 <SelectItem key={num} value={num.toString()}>
                   {num} {num === 1 ? 'thread' : 'threads'}
