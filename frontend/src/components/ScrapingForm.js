@@ -10,6 +10,14 @@ const ScrapingForm = ({ onSubmit, isLoading }) => {
   const [url, setUrl] = useState('');
   const [maxThreads, setMaxThreads] = useState('5');
 
+  // Memoize thread options to prevent unnecessary re-renders
+  const threadOptions = useMemo(() => 
+    Array.from({ length: 25 }, (_, i) => i + 1).map((num) => ({
+      value: num.toString(),
+      label: `${num} ${num === 1 ? 'thread' : 'threads'}`
+    })), []
+  );
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!url.trim()) return;
