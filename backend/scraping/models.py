@@ -35,7 +35,7 @@ class ScrapingJob(BaseModel):
     total_urls: int = 0
     completed_urls: int = 0
     failed_urls: int = 0
-    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     completed_at: Optional[datetime] = None
     results: List[str] = []  # List of scraped data IDs
 
