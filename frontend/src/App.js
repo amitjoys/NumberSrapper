@@ -153,6 +153,9 @@ const Home = () => {
           total: 0 // Will be updated via WebSocket
         });
         toast.success(response.data.message);
+        
+        // Start polling job status as fallback in case WebSocket messages are missed
+        pollJobStatus(response.data.job_id);
       } else {
         toast.error(response.data.message);
         setIsLoading(false);
