@@ -214,7 +214,7 @@ const Home = () => {
   };
 
   // Fallback polling for job status in case WebSocket messages are missed
-  const pollJobStatus = async (jobId) => {
+  const pollJobStatus = useCallback(async (jobId) => {
     let attempts = 0;
     const maxAttempts = 30; // 30 attempts * 2 seconds = 1 minute max
     
@@ -226,49 +226,54 @@ const Home = () => {
         const jobData = response.data;
         
         if (jobData && !jobData.error) {
-          // Update job state if current job matches
-          if (currentJob && currentJob.id === jobId && jobData.status !== currentJob.status) {
-            setCurrentJob(prev => ({
+          // Update job state
+          setCurrentJob(prev => {
+            // Only update if this is still the current job
+            if (!prev || prev.id !== jobId) return prev;
+            
+            return {
               ...prev,
               status: jobData.status,
               progress: jobData.progress || prev.progress,
               completed: jobData.completed_urls || prev.completed,
               failed: jobData.failed_urls || prev.failed,
               total: jobData.total_urls || prev.total
-            }));
+            };
+          });
+          
+          // If job is completed, fetch results and stop polling
+          if (jobData.status === 'completed') {
+            setIsLoading(false);
+            toast.success(`Scraping completed! ${jobData.completed_urls || 0} successful, ${jobData.failed_urls || 0} failed`);
             
-            // If job is completed, fetch results and stop polling
-            if (jobData.status === 'completed') {
-              setIsLoading(false);
-              toast.success(`Scraping completed! ${jobData.completed_urls} successful, ${jobData.failed_urls} failed`);
-              
-              // Fetch results
-              try {
-                const resultsResponse = await axios.get(`${API}/scrape/results/${jobId}`);
-                if (resultsResponse.data.results) {
-                  setJobResults(resultsResponse.data.results);
-                }
-              } catch (error) {
-                console.error('Error fetching results:', error);
+            // Fetch results
+            try {
+              const resultsResponse = await axios.get(`${API}/scrape/results/${jobId}`);
+              if (resultsResponse.data.results) {
+                setJobResults(resultsResponse.data.results);
               }
-              
-              return; // Stop polling
+            } catch (error) {
+              console.error('Error fetching results:', error);
             }
             
-            if (jobData.status === 'failed') {
-              setIsLoading(false);
-              toast.error('Scraping job failed');
-              return; // Stop polling
-            }
+            return; // Stop polling
+          }
+          
+          if (jobData.status === 'failed') {
+            setIsLoading(false);
+            toast.error('Scraping job failed');
+            return; // Stop polling
           }
         }
         
         // Continue polling if job is still in progress and we haven't exceeded max attempts
-        if (attempts < maxAttempts && (!jobData || jobData.status === 'in_progress' || jobData.status === 'started')) {
+        if (attempts < maxAttempts && jobData && (jobData.status === 'in_progress' || jobData.status === 'started')) {
           setTimeout(poll, 2000); // Poll every 2 seconds
-        } else if (attempts >= maxAttempts) {
-          console.warn('Polling timeout reached for job:', jobId);
-          setIsLoading(false);
+        } else if (attempts >= maxAttempts || (jobData && jobData.status === 'completed')) {
+          if (attempts >= maxAttempts) {
+            console.warn('Polling timeout reached for job:', jobId);
+            setIsLoading(false);
+          }
         }
         
       } catch (error) {
@@ -284,7 +289,7 @@ const Home = () => {
     
     // Start polling after a short delay
     setTimeout(poll, 1000);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
