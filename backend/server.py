@@ -204,6 +204,16 @@ async def get_job_status(job_id: str):
         job = await db.scraping_jobs.find_one({"id": job_id})
         if not job:
             return {"error": "Job not found"}
+        
+        # Convert ObjectId to string for JSON serialization
+        if "_id" in job:
+            job["_id"] = str(job["_id"])
+        
+        # Convert datetime objects to ISO strings
+        for field in ["created_at", "completed_at"]:
+            if field in job and job[field]:
+                job[field] = job[field].isoformat()
+        
         return job
     except Exception as e:
         logging.error(f"Error getting job status: {e}")
