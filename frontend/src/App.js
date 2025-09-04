@@ -69,7 +69,10 @@ const Home = () => {
               setCurrentJob(prev => ({
                 ...prev,
                 status: 'completed',
-                progress: 100
+                progress: 100,
+                completed: data.completed,
+                failed: data.failed,
+                total: data.total || prev.total
               }));
             }
             break;
