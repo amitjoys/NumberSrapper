@@ -47,5 +47,5 @@ class CachedScrapeData(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     url: str
     data: ScrapedData
-    last_scraped: datetime = Field(default_factory=lambda: datetime.utcnow())
+    last_scraped: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     expires_at: datetime
