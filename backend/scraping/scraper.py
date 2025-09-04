@@ -306,14 +306,15 @@ class ScrapingEngine:
                 }
             )
             
-            # Send WebSocket update
+            # Send WebSocket update (ensure all data is JSON serializable)
             message = {
                 "type": "progress_update",
-                "job_id": job_id,
-                "progress": progress,
-                "completed": completed,
-                "total": total,
-                "failed": failed
+                "job_id": str(job_id),
+                "progress": int(progress),
+                "completed": int(completed),
+                "total": int(total),
+                "failed": int(failed),
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             
             await self.connection_manager.broadcast(json.dumps(message))
