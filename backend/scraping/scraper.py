@@ -392,10 +392,11 @@ class ScrapingEngine:
                         
                         error_message = {
                             "type": "url_error",
-                            "job_id": job_id,
-                            "url": url,
-                            "index": index,
-                            "error": str(e)
+                            "job_id": str(job_id),
+                            "url": str(url),
+                            "index": int(index),
+                            "error": str(e),
+                            "timestamp": datetime.now(timezone.utc).isoformat()
                         }
                         await self.connection_manager.broadcast(json.dumps(error_message))
                         
