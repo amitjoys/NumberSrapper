@@ -41,7 +41,8 @@ const Home = () => {
                 ...prev,
                 progress: data.progress,
                 completed: data.completed,
-                failed: data.failed
+                failed: data.failed,
+                total: data.total || prev.total
               }));
             }
             break;
