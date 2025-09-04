@@ -81,7 +81,7 @@ class WebScraperAPITester:
         print(f"   WS URL: {self.ws_url}")
         
         try:
-            async with websockets.connect(self.ws_url, timeout=10) as websocket:
+            async with websockets.connect(self.ws_url) as websocket:
                 self.ws_connected = True
                 
                 # Send a test message
