@@ -102,7 +102,7 @@ const Home = () => {
       });
       
       if (response.data.status === 'started') {
-        setCurrentJob({
+        const jobData = {
           id: response.data.job_id,
           type: 'single',
           status: 'started',
@@ -110,8 +110,12 @@ const Home = () => {
           completed: 0,
           failed: 0,
           total: 1
-        });
+        };
+        setCurrentJob(jobData);
         toast.success('Scraping started! Check progress below.');
+        
+        // Start polling job status as fallback in case WebSocket messages are missed
+        pollJobStatus(response.data.job_id);
       } else {
         toast.error(response.data.message);
         setIsLoading(false);
