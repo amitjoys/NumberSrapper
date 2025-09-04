@@ -346,9 +346,10 @@ class ScrapingEngine:
                         # Send start message
                         start_message = {
                             "type": "url_start",
-                            "job_id": job_id,
-                            "url": url,
-                            "index": index
+                            "job_id": str(job_id),
+                            "url": str(url),
+                            "index": int(index),
+                            "timestamp": datetime.now(timezone.utc).isoformat()
                         }
                         await self.connection_manager.broadcast(json.dumps(start_message))
                         
