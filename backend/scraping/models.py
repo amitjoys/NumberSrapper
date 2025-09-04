@@ -21,7 +21,7 @@ class ScrapedData(BaseModel):
     github_url: str = ""
     persons: List[PersonData] = []
     company_address: str = ""
-    scraped_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    scraped_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     scraping_method: str = ""  # "beautifulsoup" or "playwright"
     error: Optional[str] = None
     success: bool = True
