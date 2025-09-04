@@ -194,5 +194,12 @@ def is_url_recently_scraped(last_scraped, cache_days: int = 90) -> bool:
         return False
     
     from datetime import datetime, timezone, timedelta
+    
+    # Ensure last_scraped is timezone-aware
+    if isinstance(last_scraped, datetime):
+        if last_scraped.tzinfo is None:
+            # If naive, assume UTC
+            last_scraped = last_scraped.replace(tzinfo=timezone.utc)
+    
     cutoff_date = datetime.now(timezone.utc) - timedelta(days=cache_days)
     return last_scraped > cutoff_date
