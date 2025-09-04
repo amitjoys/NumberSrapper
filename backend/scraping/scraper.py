@@ -362,15 +362,23 @@ class ScrapingEngine:
                         else:
                             failed += 1
                         
-                        # Send completion message
+                        # Send completion message (serialize datetime objects)
+                        result_data = None
+                        if result.success and result:
+                            result_data = result.dict()
+                            # Convert datetime to ISO string for JSON serialization
+                            if "scraped_at" in result_data and result_data["scraped_at"]:
+                                result_data["scraped_at"] = result_data["scraped_at"].isoformat()
+                        
                         complete_message = {
                             "type": "url_complete",
-                            "job_id": job_id,
-                            "url": url,
-                            "index": index,
-                            "success": result.success,
-                            "data": result.dict() if result.success else None,
-                            "error": result.error
+                            "job_id": str(job_id),
+                            "url": str(url),
+                            "index": int(index),
+                            "success": bool(result.success),
+                            "data": result_data,
+                            "error": str(result.error) if result.error else None,
+                            "timestamp": datetime.now(timezone.utc).isoformat()
                         }
                         await self.connection_manager.broadcast(json.dumps(complete_message))
                         
