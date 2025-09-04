@@ -2,6 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
+
+// Suppress ResizeObserver errors (common with Select components)
+window.addEventListener('error', e => {
+  if (e.message === 'ResizeObserver loop completed with undelivered notifications.' || 
+      e.message === 'ResizeObserver loop limit exceeded') {
+    e.stopImmediatePropagation();
+  }
+});
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 
